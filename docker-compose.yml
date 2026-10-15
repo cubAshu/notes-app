@@ -1,0 +1,36 @@
+services:
+  mongodb:
+    image: mongo:7.0
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ashu
+      MONGO_INITDB_ROOT_PASSWORD: ashu
+    volumes:
+      - Mrecord:/data/db
+    networks:
+      - mongonet
+
+  backend:
+    build: ./server
+    image: backendnotes:latest
+    ports:
+      - "5000:5000"
+    environment:
+      MONGODB_URI: mongodb://ashu:ashu@mongodb:27107/notesdb?authSource=admin
+      PORT: 5000
+      SECRET: mysecretkey123
+    depends_on:
+      - mongodb
+    networks:
+      - mongonet
+  frontend:
+    build: ./client
+    image: frontendnotes:1.0
+    ports:
+      - "3000:3000" 
+    depends_on:
+      - backend
+volumes:
+  Mrecord:
+
+networks:
+  mongonet:
